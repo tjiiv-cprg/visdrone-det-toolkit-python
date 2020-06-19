@@ -4,25 +4,18 @@ import cv2
 from viseval.eval_det import eval_det
 
 
-def open_label_file(path):
-    label = np.genfromtxt(path, delimiter=',', dtype=np.int64)
-    num_dims = len(label.shape)
-    if num_dims == 1:
-        label = label.reshape(1, -1)
-    return label
-
-
-def open_res_file(path):
-    label = np.genfromtxt(path, delimiter=',')
-    num_dims = len(label.shape)
-    if num_dims == 1:
-        label = label.reshape(1, -1)
+def open_label_file(path, dtype=np.float32):
+    label = np.loadtxt(path, delimiter=',', dtype=dtype, ndmin=2)
+    if not len(label):
+        label = label.reshape(0, 8)
     return label
 
 
 def main():
     dataset_dir = '/mnt/sdb/visdrone/Dataset/detection/VisDrone2019-DET-val/'
     res_dir = '/mnt/sdb/visdrone/Dataset/detection/VisDrone2019-DET-val/results_debug/'
+    # dataset_dir = 'E:/datasets/visdrone/VisDrone2019-DET-val/'
+    # res_dir = 'E:/datasets/visdrone/VisDrone2019-DET-val/results_debug/'
 
     gt_dir = osp.join(dataset_dir, 'annotations')
     img_dir = osp.join(dataset_dir, 'images')
@@ -43,10 +36,10 @@ def main():
         allwidth.append(width)
 
         label = open_label_file(
-            osp.join(gt_dir, filename + '.txt'))
+            osp.join(gt_dir, filename + '.txt'), dtype=np.int32)
         all_gt.append(label)
 
-        det = open_res_file(
+        det = open_label_file(
             osp.join(res_dir, filename + '.txt'))
         all_det.append(det)
 
