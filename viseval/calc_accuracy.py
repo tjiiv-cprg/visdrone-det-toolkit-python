@@ -74,12 +74,13 @@ def voc_ap(rec, prec):
     return ap
 
 
-def calc_accuracy(num_imgs, all_gt, all_det):
+def calc_accuracy(num_imgs, all_gt, all_det, per_class=False):
     """
     :param num_imgs: int
     :param all_gt: list of np.array[m, 8], [:, 4] == 1 indicates ignored regions,
                     which should be dropped before calling this function
     :param all_det: list of np.array[m, 6], truncation and occlusion not necessary
+    :param per_class:
     """
     assert num_imgs == len(all_gt) == len(all_det)
 
@@ -87,6 +88,7 @@ def calc_accuracy(num_imgs, all_gt, all_det):
     ar = np.zeros((10, 10, 4), dtype=np.float32)
     eval_class = []
 
+    print('')
     for id_class in range(1, 11):
         print('evaluating object category {}/10...'.format(id_class))
 
@@ -137,6 +139,12 @@ def calc_accuracy(num_imgs, all_gt, all_det):
     ar_100 = np.mean(ar[eval_class, :, 2])
     ar_500 = np.mean(ar[eval_class, :, 3])
 
+    results = (ap_all, ap_50, ap_75, ar_1, ar_10, ar_100, ar_500)
+
+    if per_class:
+        ap_classwise = np.mean(ap, axis=1)
+        results += (ap_classwise,)
+
     print('Evaluation completed. The performance of the detector is presented as follows.')
 
-    return ap_all, ap_50, ap_75, ar_1, ar_10, ar_100, ar_500
+    return results

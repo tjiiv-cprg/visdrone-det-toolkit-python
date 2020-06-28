@@ -15,8 +15,8 @@ def open_label_file(path, dtype=np.float32):
 def main():
     dataset_dir = '/mnt/sdb/visdrone/Dataset/detection/VisDrone2019-DET-val/'
     res_dir = '/mnt/sdb/visdrone/Dataset/detection/VisDrone2019-DET-val/results_debug/'
-    # dataset_dir = 'E:/datasets/visdrone/VisDrone2019-DET-val/'
-    # res_dir = 'E:/datasets/visdrone/VisDrone2019-DET-val/results_debug/'
+    # dataset_dir = 'E:/datasets/visdrone/VisDrone2019-DET-test-dev/'
+    # res_dir = 'E:/datasets/visdrone/VisDrone2019-DET-test-dev/results/'
 
     gt_dir = osp.join(dataset_dir, 'annotations')
     img_dir = osp.join(dataset_dir, 'images')
@@ -44,8 +44,8 @@ def main():
             osp.join(res_dir, filename + '.txt'))
         all_det.append(det)
 
-    ap_all, ap_50, ap_75, ar_1, ar_10, ar_100, ar_500 = eval_det(
-        all_gt, all_det, allheight, allwidth)
+    ap_all, ap_50, ap_75, ar_1, ar_10, ar_100, ar_500, ap_classwise = eval_det(
+        all_gt, all_det, allheight, allwidth, per_class=True)
 
     print('Average Precision  (AP) @[ IoU=0.50:0.95 | maxDets=500 ] = {}%.'.format(ap_all))
     print('Average Precision  (AP) @[ IoU=0.50      | maxDets=500 ] = {}%.'.format(ap_50))
@@ -54,6 +54,9 @@ def main():
     print('Average Recall     (AR) @[ IoU=0.50:0.95 | maxDets= 10 ] = {}%.'.format(ar_10))
     print('Average Recall     (AR) @[ IoU=0.50:0.95 | maxDets=100 ] = {}%.'.format(ar_100))
     print('Average Recall     (AR) @[ IoU=0.50:0.95 | maxDets=500 ] = {}%.'.format(ar_500))
+
+    for i, ap in enumerate(ap_classwise):
+        print('Class {} AP = {}%'.format(i, ap))
 
 
 if __name__ == '__main__':
